@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2016 the original author or authors.
+ * Copyright 2002-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,6 @@ import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 import org.springframework.web.util.UrlPathHelper;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -159,7 +158,9 @@ import static org.junit.Assert.*;
  */
 public class MvcNamespaceTests {
 
-	public static final String VIEWCONTROLLER_BEAN_NAME = "org.springframework.web.servlet.config.viewControllerHandlerMapping";
+	public static final String VIEWCONTROLLER_BEAN_NAME =
+			"org.springframework.web.servlet.config.viewControllerHandlerMapping";
+
 
 	private GenericWebApplicationContext appContext;
 
@@ -197,7 +198,7 @@ public class MvcNamespaceTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo.json");
 		NativeWebRequest webRequest = new ServletWebRequest(request);
 		ContentNegotiationManager manager = mapping.getContentNegotiationManager();
-		assertEquals(Arrays.asList(MediaType.APPLICATION_JSON), manager.resolveMediaTypes(webRequest));
+		assertEquals(Collections.singletonList(MediaType.APPLICATION_JSON), manager.resolveMediaTypes(webRequest));
 
 		RequestMappingHandlerAdapter adapter = appContext.getBean(RequestMappingHandlerAdapter.class);
 		assertNotNull(adapter);
@@ -697,7 +698,8 @@ public class MvcNamespaceTests {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo.xml");
 		NativeWebRequest webRequest = new ServletWebRequest(request);
-		assertEquals(Arrays.asList(MediaType.valueOf("application/rss+xml")), manager.resolveMediaTypes(webRequest));
+		assertEquals(Collections.singletonList(MediaType.valueOf("application/rss+xml")),
+				manager.resolveMediaTypes(webRequest));
 
 		ViewResolverComposite compositeResolver = this.appContext.getBean(ViewResolverComposite.class);
 		assertNotNull(compositeResolver);
@@ -882,7 +884,7 @@ public class MvcNamespaceTests {
 			assertArrayEquals(new String[]{"*"}, config.getAllowedHeaders().toArray());
 			assertNull(config.getExposedHeaders());
 			assertTrue(config.getAllowCredentials());
-			assertEquals(new Long(1600), config.getMaxAge());
+			assertEquals(Long.valueOf(1800), config.getMaxAge());
 		}
 	}
 
@@ -905,14 +907,14 @@ public class MvcNamespaceTests {
 			assertArrayEquals(new String[]{"header1", "header2", "header3"}, config.getAllowedHeaders().toArray());
 			assertArrayEquals(new String[]{"header1", "header2"}, config.getExposedHeaders().toArray());
 			assertFalse(config.getAllowCredentials());
-			assertEquals(new Long(123), config.getMaxAge());
+			assertEquals(Long.valueOf(123), config.getMaxAge());
 			config = configs.get("/resources/**");
 			assertArrayEquals(new String[]{"http://domain1.com"}, config.getAllowedOrigins().toArray());
 			assertArrayEquals(new String[]{"GET", "HEAD", "POST"}, config.getAllowedMethods().toArray());
 			assertArrayEquals(new String[]{"*"}, config.getAllowedHeaders().toArray());
 			assertNull(config.getExposedHeaders());
 			assertTrue(config.getAllowCredentials());
-			assertEquals(new Long(1600), config.getMaxAge());
+			assertEquals(Long.valueOf(1800), config.getMaxAge());
 		}
 	}
 
@@ -928,22 +930,25 @@ public class MvcNamespaceTests {
 
 
 	@DateTimeFormat(iso = ISO.DATE)
-	@Target({ElementType.PARAMETER})
+	@Target(ElementType.PARAMETER)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface IsoDate {
 	}
 
+
 	@NumberFormat(style = NumberFormat.Style.PERCENT)
-	@Target({ElementType.PARAMETER})
+	@Target(ElementType.PARAMETER)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface PercentNumber {
 	}
 
+
 	@Validated(MyGroup.class)
-	@Target({ElementType.PARAMETER})
+	@Target(ElementType.PARAMETER)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface MyValid {
 	}
+
 
 	@Controller
 	public static class TestController {
@@ -955,12 +960,16 @@ public class MvcNamespaceTests {
 		private boolean recordedValidationError;
 
 		@RequestMapping
-		public void testBind(@RequestParam @IsoDate Date date, @RequestParam(required = false) @PercentNumber Double percent, @MyValid TestBean bean, BindingResult result) {
+		public void testBind(@RequestParam @IsoDate Date date,
+				@RequestParam(required = false) @PercentNumber Double percent,
+				@MyValid TestBean bean, BindingResult result) {
+
 			this.date = date;
 			this.percent = percent;
 			this.recordedValidationError = (result.getErrorCount() == 1);
 		}
 	}
+
 
 	public static class TestValidator implements Validator {
 
@@ -977,9 +986,11 @@ public class MvcNamespaceTests {
 		}
 	}
 
+
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface MyGroup {
 	}
+
 
 	private static class TestBean {
 
@@ -996,6 +1007,7 @@ public class MvcNamespaceTests {
 			this.field = field;
 		}
 	}
+
 
 	private static class TestMockServletContext extends MockServletContext {
 
@@ -1015,11 +1027,14 @@ public class MvcNamespaceTests {
 		}
 	}
 
+
 	public static class TestCallableProcessingInterceptor extends CallableProcessingInterceptorAdapter {
 	}
 
+
 	public static class TestDeferredResultProcessingInterceptor extends DeferredResultProcessingInterceptorAdapter {
 	}
+
 
 	public static class TestPathMatcher implements PathMatcher {
 
@@ -1059,8 +1074,10 @@ public class MvcNamespaceTests {
 		}
 	}
 
+
 	public static class TestPathHelper extends UrlPathHelper {
 	}
+
 
 	public static class TestCacheManager implements CacheManager {
 

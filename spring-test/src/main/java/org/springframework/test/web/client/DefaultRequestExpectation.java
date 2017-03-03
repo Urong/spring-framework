@@ -46,8 +46,8 @@ public class DefaultRequestExpectation implements RequestExpectation {
 	 * @param expectedCount the expected request expectedCount
 	 */
 	public DefaultRequestExpectation(ExpectedCount expectedCount, RequestMatcher requestMatcher) {
-		Assert.notNull(expectedCount, "'expectedCount' is required");
-		Assert.notNull(requestMatcher, "'requestMatcher' is required");
+		Assert.notNull(expectedCount, "ExpectedCount is required");
+		Assert.notNull(requestMatcher, "RequestMatcher is required");
 		this.requestCount = new RequestCount(expectedCount);
 		this.requestMatchers.add(requestMatcher);
 	}
@@ -137,6 +137,7 @@ public class DefaultRequestExpectation implements RequestExpectation {
 		}
 
 		public boolean isSatisfied() {
+			// Only validate min count since max count is checked on every request...
 			return (getMatchedRequestCount() >= getExpectedCount().getMinCount());
 		}
 	}
